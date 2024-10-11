@@ -21,47 +21,117 @@ from .forms import FormTodo
 # Create your views here.
 
 # registration page
+#def register_page(request):
+#    if request.method == 'POST':
+#        first_name = request.POST.get('f_name')
+#        last_name = request.POST.get('l_name')
+#        username = request.POST.get('username')
+#        password = request.POST.get('password')
+#
+#        user = User.objects.filter(username = username)
+#        if user.exists():
+#            messages.info(request,'Username already taken')
+#            return redirect('register_page')
+#        user = User.objects.create_user(
+#            username = username,
+#            first_name = first_name,
+#            last_name = last_name,
+#        )
+#        user.set_password(password)
+#        user.save()
+#        messages.info(request,'Account created successfully')
+#        return redirect('login_page')
+#    return render(request,'safe_sign/register.html')
+
+# Code Refactoring block
+class UserRegistration:
+    def __init__(self,request):
+        self.request = request
+        self.f_name = request.POST.get('f_name')
+        self.l_name = request.POST.get('l_name')
+        self.username = request.POST.get('username')
+        self.password = request.POST.get('password')
+
+    def is_username_taken(self):
+        return User.objects.filter(username = self.username).exists()
+
+    def create_user(self):
+        user = User.objects.create_user(
+            username = self.username,
+            first_name = self.f_name,
+            last_name = self.l_name
+        )
+        user.set_password(self.password)
+        user.save()
+
+    def register_user(self):
+        if self.is_username_taken():
+            messages.info(self.request,'Username is already taken')
+            return False
+        else:
+            self.create_user()
+            messages.info(self.request,"User created successfuly")
+            return True
+
 def register_page(request):
     if request.method == 'POST':
-        first_name = request.POST.get('f_name')
-        last_name = request.POST.get('l_name')
-        username = request.POST.get('username')
-        password = request.POST.get('password')
-
-        user = User.objects.filter(username = username)
-        if user.exists():
-            messages.info(request,'Username already taken')
+        regestration = UserRegistration(request)
+        if regestration.register_user():
+            return redirect('login_page')
+        else:
             return redirect('register_page')
-        user = User.objects.create_user(
-            username = username,
-            first_name = first_name,
-            last_name = last_name,
-        )
-        user.set_password(password)
-        user.save()
-        messages.info(request,'Account created successfully')
-        return redirect('login_page')
-    return render(request,'safe_sign/register.html')
+    else:
+        return render(request,'safe_sign/register.html')
+# EndRefactoring block
+
+#def login_page(request):
+#    if request.method == 'POST':
+#        username = request.POST.get('username')
+#        password = request.POST.get('password')
+#
+#        user = User.objects.get(username = username)
+#        if not user.DoesNotExist():
+#            messages.error(request,'Invalid Username')
+#            return HttpResponse('lgoin_page')
+#        user = authenticate(username = username,password = password)
+#
+#        if user is None:
+#            messages.error(request,'Invalid password')
+#            return redirect('login_page')
+#        else:
+#            login(request,user)
+#            return redirect('TaskFlowHome') # return to Task home page
+#    return render(request,'safe_sign/login.html')
+
+
+# Code Refactoring block
+
+class UserLogin:
+    def __init__(self,request):
+        self.request = request
+        self.username = request.POST.get('username')
+        self.password = request.POST.get('password')
+
+    def user_authentication(self):
+        return authenticate(username = self.username,password = self.password)
+
+
+    def user_Login(self):
+        user = authenticate(username = self.username,password = self.password)
+        login(self.request,user)
 
 def login_page(request):
     if request.method == 'POST':
-        username = request.POST.get('username')
-        password = request.POST.get('password')
-
-        user = User.objects.get(username = username)
-        if not user.DoesNotExist():
-            messages.error(request,'Invalid Username')
-            return HttpResponse('lgoin_page')
-        user = authenticate(username = username,password = password)
-
-        if user is None:
-            messages.error(request,'Invalid password')
-            return redirect('login_page')
+        userlogin = UserLogin(request)
+        if userlogin.user_authentication is None:
+            messages.error(request,"Invalid Username or Password")
         else:
-            login(request,user)
-            return redirect('TaskFlowHome') # return to Task home page
-    return render(request,'safe_sign/login.html')
+            userlogin.user_Login()
+            return redirect('TaskFlowHome')
+    else:
+        return render(request,'safe_sign/login.html')
 
+# Endcode Refactoring
 
 # password reset vew
 def password_reset(request):
