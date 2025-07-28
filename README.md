@@ -134,7 +134,7 @@ http://127.0.0.1:8000/
 - Python 3.x
 - Django 4.x
 - SQLite (default Django database)
-- HTML
+- Django Rest Framework
 
 ---
 
@@ -144,7 +144,6 @@ http://127.0.0.1:8000/
 - Categorize tasks by priority
 - Tagging support
 - Dark mode UI
-- REST API using Django REST Framework (DRF)
 - Responsive frontend with Tailwind or Bootstrap
 
 ---
