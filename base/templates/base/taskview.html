@@ -1,0 +1,33 @@
+{% extends 'base/base.html' %}
+{% block title %}
+View Task
+{% endblock %}
+{% block body %}
+<h1>My Todo List</h1>
+<a href="{% url 'create-task' %}">Add Task</a>
+<form action="" method="get">
+    <input type="text" placeholder="Search hare" name="q">
+    <button type="submit">Search</button>
+</form>
+<table>
+    <tr>
+        <th>Item</th>
+        <th></th>
+        <th></th>
+        <th></th>
+    </tr>
+    {% for task in tasks %}
+    <tr>
+        <td>{{task.title}}</td>
+        <td> <a href="{% url 'task' task.id %}">View</a> </td>
+        <td> <a href="{% url 'task-update' task.id %}">Update</a> </td>
+        <td> <a href="{% url 'task-delete' task.id %}">Delete</a> </td>
+    </tr>
+    {% empty %}
+    <tr>
+        <td>Empty Task List</td>
+    </tr>
+    {% endfor %}
+</table>
+
+{% endblock %}
